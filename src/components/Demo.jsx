@@ -1,5 +1,7 @@
 import { useState } from "react";
 import linkIcon from "../assets/link.svg";
+import { useLazyGetSummaryQuery } from "../services/article";
+
 const EnterIcon = (
   <svg
     stroke="currentColor"
@@ -16,6 +18,8 @@ const EnterIcon = (
 
 function Demo() {
   const [article, setArticle] = useState({ url: "" });
+
+  const [geetSummary, { error, isFetching }] = useLazyGetSummaryQuery();
 
   const handleSubmit = async (e) => {
     alert("submited");
