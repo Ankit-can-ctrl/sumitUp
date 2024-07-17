@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import linkIcon from "../assets/link.svg";
 import { useLazyGetSummaryQuery } from "../services/article";
 
@@ -17,12 +17,37 @@ const EnterIcon = (
 );
 
 function Demo() {
-  const [article, setArticle] = useState({ url: "" });
+  const [article, setArticle] = useState({ url: "", summary: "" });
 
-  const {} = useLazyGetSummaryQuery();
+  //array for storing the history of the last searches by the user
+  const [allArticles, setAllArticles] = useState([]);
+
+  const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
+
+  // storing the searched article in local storage
+  useEffect(() => {
+    const articlesFromLocalStorage = JSON.parse(
+      localStorage.getItem("articles")
+    );
+    if (articlesFromLocalStorage) {
+      setAllArticles(articlesFromLocalStorage);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
-    alert("submited");
+    e.preventDefault(); //to prevent reload on submit
+
+    const { data } = await getSummary({ articleUrl: article.url });
+
+    if (data?.summary) {
+      const newArticle = { ...article, summary: data.summary };
+
+      const updateAllArticles = [newArticle, ...allArticles];
+
+      setAllArticles(updateAllArticles);
+      setArticle(newArticle);
+      localStorage.setItem("articles", JSON.stringify(updateAllArticles));
+    }
   };
 
   return (
