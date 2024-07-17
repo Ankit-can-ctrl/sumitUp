@@ -19,7 +19,7 @@ const EnterIcon = (
 function Demo() {
   const [article, setArticle] = useState({ url: "" });
 
-  const [geetSummary, { error, isFetching }] = useLazyGetSummaryQuery();
+  const {} = useLazyGetSummaryQuery();
 
   const handleSubmit = async (e) => {
     alert("submited");

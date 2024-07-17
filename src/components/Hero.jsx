@@ -1,6 +1,8 @@
 import logo from "../assets/logo.png";
 
 function Hero() {
+  const rapidApiKey = import.meta.env.VITE_RAPID_API_KEY;
+  console.log(rapidApiKey);
   return (
     <header className="w-full flex flex-col gap-10 md:gap-20 mt-10">
       <nav className=" w-full flex items-center justify-between gap-5">
