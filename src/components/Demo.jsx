@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import linkIcon from "../assets/link.svg";
+import { copy, loader, tick } from "../assets";
 import { useLazyGetSummaryQuery } from "../services/article";
 
 const EnterIcon = (
@@ -24,6 +25,7 @@ function Demo() {
 
   const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
 
+  const [copied, setCopied] = useState("");
   // storing the searched article in local storage
   useEffect(() => {
     const articlesFromLocalStorage = JSON.parse(
@@ -48,6 +50,12 @@ function Demo() {
       setArticle(newArticle);
       localStorage.setItem("articles", JSON.stringify(updateAllArticles));
     }
+  };
+
+  const handleCopy = (copyUrl) => {
+    setCopied(copyUrl);
+    navigator.clipboard.writeText(copyUrl);
+    setTimeout(() => setCopied(false), 3000);
   };
 
   return (
@@ -79,6 +87,59 @@ function Demo() {
           </button>
         </form>
         {/*============ Browse History=========== */}
+
+        <div className="main_history overflow-y-auto flex flex-col gap-1 max-h-60">
+          {allArticles.reverse().map((item, index) => (
+            <div
+              key={`link-${index}`}
+              onClick={() => setArticle(item)}
+              className="link_card"
+            >
+              <div className=" copy_btn" onClick={() => handleCopy(item.url)}>
+                <img
+                  src={copied === item.url ? tick : copy}
+                  alt="copy_link-icon"
+                  className=" object-contain"
+                />
+              </div>
+              <p className="flex-1 font-satoshi text-blue-700 font-medium text-sm truncate">
+                {item.url}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* ==========Display Result============ */}
+        <div className="my-10 max-w-full flex justify-center items-center">
+          {isFetching ? (
+            <img
+              src={loader}
+              alt="Loader"
+              className="w-20 h-20 object-contain"
+            />
+          ) : error ? (
+            <p className=" font-inter font-bold text-black text-center">
+              Well, that wasn&apos;t supposed to happen...
+              <br />
+              <span className="font-satoshi font-normal text-gray-700">
+                {error?.data?.error}
+              </span>
+            </p>
+          ) : (
+            article.summary && (
+              <div className="flex flex-col gap-3">
+                <h2 className="font-satoshi font-bold text-gray-600 text-xl">
+                  Article <span className="blue_gradient">Summary</span>
+                </h2>
+                <div className="summary_box">
+                  <p className="font-inter font-medium text-sm text-gray-700">
+                    {article.summary}
+                  </p>
+                </div>
+              </div>
+            )
+          )}
+        </div>
       </div>
     </section>
   );
